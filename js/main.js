@@ -1,46 +1,37 @@
 "use strict";
 
-function start () {
-    var canvas = document.getElementById ('gameCanvas');
-    var context = canvas.getContext ('2d');
+var canvas = document.getElementById ('gameCanvas');
+var context = canvas.getContext ('2d');
+var timeout = 10;
+var ball = {
+    x: (canvas.width / 2), y: (canvas.height - 30), radius: 10, 
+    startAngle: 0, endAngle: Math.PI * 2,
+    color: '#0095DD'
+};
 
-    var redSquare = {
-        x: 20, y: 40, width: 50, height: 50,
-        color: '#FF0000'
-    };
+var incrementer = {
+    x: 2, y: -2
+};
 
-    var greenCircle = {
-        x: 240, y: 160, radius: 20, 
-        startAngle: 20, endAngle: Math.PI * 2,
-        anticlockwise: false,
-        color: 'green'
-    };
+function draw () {
 
-    var blueRect = {
-        x: 160, y: 10, width: 100, height: 40,
-        strokeColor: 'rgba(0, 0, 255, 0.5)'
-    };
+    context.clearRect (0, 0, canvas.width, canvas.height);
+    
+    drawBall();
 
-    // draws a red square
-    context.beginPath ();
-    context.rect (redSquare.x, redSquare.y, redSquare.width, redSquare.height);
-    context.fillStyle = redSquare.color;
-    context.fill ();
-    context.closePath ();
-
-    // draws a green circle
-    context.beginPath ();
-    context.arc (greenCircle.x, greenCircle.y, greenCircle.radius, greenCircle.startAngle, greenCircle.endAngle, greenCircle.anticlockwise);
-    context.fillStyle = greenCircle.color;
-    context.fill ();
-    context.closePath ();
-
-    // draws a blue rect
-    context.beginPath ();
-    context.rect (blueRect.x, blueRect.y, blueRect.width, blueRect.height);
-    context.strokeStyle = blueRect.strokeColor;
-    context.stroke ();
-    context.closePath ();
+    ball.x += incrementer.x;
+    ball.y += incrementer.y;
 }
 
-start ();
+// draws the ball
+function drawBall() {
+    context.beginPath();
+    context.arc(ball.x, ball.y, ball.radius, ball.startAngle, ball.endAngle);
+    context.fillStyle = ball.color;
+    context.fill();
+    context.closePath();
+}
+
+setInterval (draw, timeout);
+
+
