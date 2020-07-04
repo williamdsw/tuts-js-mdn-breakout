@@ -43,6 +43,16 @@ var scoreProperties = {
     x: 8, y: 20
 };
 
+var playerProperties = {
+    liveInfo: {
+        numberOfLives: 3,
+        fontSize: '16px',
+        fontFamily: 'Arial',
+        color: '#0095DD',
+        x: (canvas.width - 65), y: 20
+    }
+};
+
 var bricks = [];
 
 var screenLimits = {
@@ -103,6 +113,12 @@ function drawScore () {
     context.fillText (`Score: ${scoreProperties.score}`, scoreProperties.x, scoreProperties.y);
 }
 
+function drawLives () {
+    context.font = `${playerProperties.liveInfo.fontSize}  ${playerProperties.liveInfo.fontFamily}`;
+    context.fillStyle = playerProperties.liveInfo.color;
+    context.fillText (`Lives: ${playerProperties.liveInfo.numberOfLives}`, playerProperties.liveInfo.x, playerProperties.liveInfo.y);
+}
+
 function checkBrickCollisionWithBall () {
     for (var col = 0; col < brickProperties.columnCount; col++) {
         for (var row = 0; row < brickProperties.rowCount; row++) { 
@@ -123,7 +139,6 @@ function checkBrickCollisionWithBall () {
                     if (brickProperties.destroyed == (brickProperties.rowCount * brickProperties.columnCount)) {
                         alert (`YOU WIN, CONGRATULATIONS! Score: ${scoreProperties.score}`);
                         document.location.reload ();
-                        clearInterval (interval);
                     }
                 }
             }
@@ -139,6 +154,7 @@ function mainLoop () {
     drawPaddle ();
     drawBricks ();
     drawScore ();
+    drawLives ();
     checkBrickCollisionWithBall ();
 
     // checks top / bottom edges
@@ -151,9 +167,18 @@ function mainLoop () {
             incrementer.y *= -1;
         }
         else {
-            alert ('GAME OVER');
-            document.location.reload ();
-            clearInterval (interval);
+            playerProperties.liveInfo.numberOfLives--;
+            if (!playerProperties.liveInfo.numberOfLives) {
+                alert ('GAME OVER');
+                document.location.reload ();
+            }
+            else {
+                ball.x = (canvas.width / 2);
+                ball.y = (canvas.height / 30);
+                incrementer.x = 2;
+                incrementer.y = -2;
+                paddle.x = (canvas.width - paddle.width) / 2;
+            }
         }
     }
 
@@ -178,6 +203,8 @@ function mainLoop () {
     
     ball.x += incrementer.x;
     ball.y += incrementer.y;
+
+    requestAnimationFrame (mainLoop);
 }
 
 function init () {
@@ -201,7 +228,7 @@ function init () {
     document.addEventListener ('keyup', onKeyUpHandler, false);
     document.addEventListener ('mousemove', onMouseMoveHandler, false);
 
-    interval = setInterval (mainLoop, timeout);
+    mainLoop ();
 }
 
 // checks input
