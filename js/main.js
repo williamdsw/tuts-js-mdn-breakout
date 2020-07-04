@@ -6,8 +6,12 @@
 var canvas = document.getElementById ('gameCanvas');
 var context = canvas.getContext ('2d');
 var timeout = 10;
-var pressedButtons = {
-    right: false, left: false
+var pressedButtons = { right: false, left: false };
+var interval = null;
+var brickColors = ['red', 'green', 'blue', 'gray', 'purple', 'yellow', 'orange'];
+var keys = {
+    right: ['Right', 'ArrowRight'],
+    left: ['Left', 'ArrowLeft']
 };
 
 var ball = {
@@ -23,6 +27,14 @@ var paddle = {
     y: (canvas.height - 10),
     color: '#0095DD'
 };
+
+var brickProperties = {
+    rowCount: 3, columnCount: 5,
+    width: 75, height: 20,
+    padding: 10, offset: 30
+};
+
+var bricks = [];
 
 var screenLimits = {
     top: 0,
@@ -55,12 +67,33 @@ function drawPaddle () {
     context.closePath ();
 }
 
-function draw () {
+function drawBricks () {
+    for (var column = 0; column < brickProperties.columnCount; column++) {
+        for (var row = 0; row < brickProperties.rowCount; row++) {
+
+            var x = (column * (brickProperties.width + brickProperties.padding)) + brickProperties.offset;
+            var y = (row * (brickProperties.height + brickProperties.padding)) + brickProperties.offset;
+
+            bricks[column][row].x = x;
+            bricks[column][row].y = y;
+
+            // draws a rectangle
+            context.beginPath ();
+            context.rect (x, y, brickProperties.width, brickProperties.height);
+            context.fillStyle = bricks[column][row].color;
+            context.fill ();
+            context.closePath ();
+        }
+    }
+}
+
+function mainLoop () {
 
     context.clearRect (0, 0, canvas.width, canvas.height);
     
     drawBall ();
     drawPaddle ();
+    drawBricks ();
 
     // checks top / bottom edges
     if ((ball.y + incrementer.y) < ball.radius) {
@@ -101,28 +134,41 @@ function draw () {
     ball.y += incrementer.y;
 }
 
+function init () {
+
+    bricks = [];
+    for (var column = 0; column < brickProperties.columnCount; column++) {
+        bricks[column] = [];
+
+        for (var row = 0; row < brickProperties.rowCount; row++) {
+            var index = Math.floor (Math.random () * 10);
+            bricks[column][row] = { x: 0, y: 0, color: brickColors[index] };
+        }
+    }
+
+    document.addEventListener ('keydown', keydownHandler, false);
+    document.addEventListener ('keyup', keyupHandler, false);
+    interval = setInterval (mainLoop, timeout);
+}
+
 // checks input
 
 function keydownHandler (ev) {
-    if (ev.key == 'Right' || ev.key == 'ArrowRight') {
+    if (keys.right.indexOf (ev.key) !== -1) {
         pressedButtons.right = true;
     }
-    else if (ev.key == 'Left' || ev.key == 'ArrowLeft') {
+    else if (keys.left.indexOf (ev.key) !== -1) {
         pressedButtons.left = true;
     }
 }
 
 function keyupHandler (ev) {
-    if (ev.key == 'Right' || ev.key == 'ArrowRight') {
+    if (keys.right.indexOf (ev.key) !== -1) {
         pressedButtons.right = false;
     }
-    else if (ev.key == 'Left' || ev.key == 'ArrowLeft') {
+    else if (keys.left.indexOf (ev.key) !== -1) {
         pressedButtons.left = false;
     }
 }
 
-
-document.addEventListener ('keydown', keydownHandler, false);
-document.addEventListener ('keyup', keyupHandler, false);
-
-var interval = setInterval (draw, timeout);
+init ();
