@@ -70,19 +70,37 @@ function drawPaddle () {
 function drawBricks () {
     for (var column = 0; column < brickProperties.columnCount; column++) {
         for (var row = 0; row < brickProperties.rowCount; row++) {
+            if (bricks[column][row].status == 1) {
+                var x = (column * (brickProperties.width + brickProperties.padding)) + brickProperties.offset;
+                var y = (row * (brickProperties.height + brickProperties.padding)) + brickProperties.offset;
 
-            var x = (column * (brickProperties.width + brickProperties.padding)) + brickProperties.offset;
-            var y = (row * (brickProperties.height + brickProperties.padding)) + brickProperties.offset;
+                bricks[column][row].x = x;
+                bricks[column][row].y = y;
 
-            bricks[column][row].x = x;
-            bricks[column][row].y = y;
+                // draws a rectangle
+                context.beginPath ();
+                context.rect (x, y, brickProperties.width, brickProperties.height);
+                context.fillStyle = bricks[column][row].color;
+                context.fill ();
+                context.closePath ();
+            }
+        }
+    }
+}
 
-            // draws a rectangle
-            context.beginPath ();
-            context.rect (x, y, brickProperties.width, brickProperties.height);
-            context.fillStyle = bricks[column][row].color;
-            context.fill ();
-            context.closePath ();
+function checkBrickCollisionWithBall () {
+    for (var col = 0; col < brickProperties.columnCount; col++) {
+        for (var row = 0; row < brickProperties.rowCount; row++) { 
+            var brick = bricks[col][row];
+
+            if (brick.status == 1) {
+                if (ball.x > brick.x && ball.x < (brick.x + brickProperties.width) && 
+                    ball.y > brick.y && ball.y < (brick.y + brickProperties.height)) {
+                    
+                    incrementer.y *= -1;
+                    brick.status = 0;
+                }
+            }
         }
     }
 }
@@ -94,6 +112,7 @@ function mainLoop () {
     drawBall ();
     drawPaddle ();
     drawBricks ();
+    checkBrickCollisionWithBall ();
 
     // checks top / bottom edges
     if ((ball.y + incrementer.y) < ball.radius) {
@@ -142,7 +161,11 @@ function init () {
 
         for (var row = 0; row < brickProperties.rowCount; row++) {
             var index = Math.floor (Math.random () * 10);
-            bricks[column][row] = { x: 0, y: 0, color: brickColors[index] };
+            bricks[column][row] = { 
+                x: 0, y: 0, 
+                color: brickColors[index],
+                status: 1
+            };
         }
     }
 
