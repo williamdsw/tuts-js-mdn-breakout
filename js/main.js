@@ -63,9 +63,19 @@ function draw () {
     drawPaddle ();
 
     // checks top / bottom edges
-    if ((ball.y + incrementer.y) < ball.radius || 
-        (ball.y + incrementer.y) > (screenLimits.bottom - ball.radius)) {
+    if ((ball.y + incrementer.y) < ball.radius) {
         incrementer.y *= -1;
+    }
+    else if ((ball.y + incrementer.y) > (screenLimits.bottom - ball.radius)) {
+
+        if (ball.x > paddle.x && ball.x < (paddle.x + paddle.width)) {
+            incrementer.y *= -1;
+        }
+        else {
+            alert ('GAME OVER');
+            document.location.reload ();
+            clearInterval (interval);
+        }
     }
 
     // checks left / right edges
@@ -115,4 +125,4 @@ function keyupHandler (ev) {
 document.addEventListener ('keydown', keydownHandler, false);
 document.addEventListener ('keyup', keyupHandler, false);
 
-setInterval (draw, timeout);
+var interval = setInterval (draw, timeout);
