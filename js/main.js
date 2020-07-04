@@ -31,7 +31,16 @@ var paddle = {
 var brickProperties = {
     rowCount: 3, columnCount: 5,
     width: 75, height: 20,
-    padding: 10, offset: 30
+    padding: 10, offset: 30,
+    destroyed: 0
+};
+
+var scoreProperties = {
+    score: 0,
+    fontSize: '16px',
+    fontFamily: 'Arial',
+    color: '#0095DD',
+    x: 8, y: 20
 };
 
 var bricks = [];
@@ -88,6 +97,12 @@ function drawBricks () {
     }
 }
 
+function drawScore () {
+    context.font = `${scoreProperties.fontSize}  ${scoreProperties.fontFamily}`;
+    context.fillStyle = scoreProperties.color;
+    context.fillText (`Score: ${scoreProperties.score}`, scoreProperties.x, scoreProperties.y);
+}
+
 function checkBrickCollisionWithBall () {
     for (var col = 0; col < brickProperties.columnCount; col++) {
         for (var row = 0; row < brickProperties.rowCount; row++) { 
@@ -99,6 +114,17 @@ function checkBrickCollisionWithBall () {
                     
                     incrementer.y *= -1;
                     brick.status = 0;
+                    brickProperties.destroyed++;
+
+                    var randomScore = Math.ceil (Math.random () * 100);
+                    scoreProperties.score += randomScore;
+
+                    // winning
+                    if (brickProperties.destroyed == (brickProperties.rowCount * brickProperties.columnCount)) {
+                        alert (`YOU WIN, CONGRATULATIONS! Score: ${scoreProperties.score}`);
+                        document.location.reload ();
+                        clearInterval (interval);
+                    }
                 }
             }
         }
@@ -112,6 +138,7 @@ function mainLoop () {
     drawBall ();
     drawPaddle ();
     drawBricks ();
+    drawScore ();
     checkBrickCollisionWithBall ();
 
     // checks top / bottom edges
