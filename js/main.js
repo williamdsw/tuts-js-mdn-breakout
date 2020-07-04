@@ -196,14 +196,17 @@ function init () {
         }
     }
 
-    document.addEventListener ('keydown', keydownHandler, false);
-    document.addEventListener ('keyup', keyupHandler, false);
+    // Listeners
+    document.addEventListener ('keydown', onKeyDownHandler, false);
+    document.addEventListener ('keyup', onKeyUpHandler, false);
+    document.addEventListener ('mousemove', onMouseMoveHandler, false);
+
     interval = setInterval (mainLoop, timeout);
 }
 
 // checks input
 
-function keydownHandler (ev) {
+function onKeyDownHandler (ev) {
     if (keys.right.indexOf (ev.key) !== -1) {
         pressedButtons.right = true;
     }
@@ -212,12 +215,19 @@ function keydownHandler (ev) {
     }
 }
 
-function keyupHandler (ev) {
+function onKeyUpHandler (ev) {
     if (keys.right.indexOf (ev.key) !== -1) {
         pressedButtons.right = false;
     }
     else if (keys.left.indexOf (ev.key) !== -1) {
         pressedButtons.left = false;
+    }
+}
+
+function onMouseMoveHandler (ev) {
+    var relativeX = (ev.clientX - canvas.offsetLeft);
+    if (relativeX > 0 && relativeX < canvas.width) {
+        paddle.x = (relativeX - paddle.width / 2);
     }
 }
 
