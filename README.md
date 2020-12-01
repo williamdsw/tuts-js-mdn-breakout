@@ -3,4 +3,4 @@
 Project based on this tutorial: https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
 
 
-Live demo: https://williamdsw.github.io/tuts-js-mdn-breakout/index.html
+Live demo: https://williamdsw.github.io/tuts-js-mdn-breakout
